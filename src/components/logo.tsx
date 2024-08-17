@@ -5,7 +5,6 @@ import React from "react";
 interface Props {}
 
 function Logo({}: Props) {
-  const { textArr } = useAppSelector((state) => state.typingWord);
   const { height, width } = useAppSelector(
     (state) => state.typingParagraphProp
   );

@@ -21,7 +21,7 @@ const Typing = (props: Props) => {
   }, []);
 
   return (
-    <div ref={divRef} className=" bg-blue-50">
+    <div ref={divRef} className=" ">
       {height !== 0 ? <TypingParagraph /> : "Loading..."}
     </div>
   );

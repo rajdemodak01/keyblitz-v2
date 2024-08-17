@@ -1,24 +1,26 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface TypingWord {
-  textArr: TextArr[];
+  wordArr: wordProp[];
+  correctWordArr: string[];
   wordIndex: number;
   letterIndex: number;
 }
 
 interface ChangePropOfWordPayload {
   index: number;
-  prop: TextArr;
+  prop: wordProp;
 }
 
 const text =
-  "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolores, ipsum officiis amet placeat nesciunt assumenda voluptates! Provident officia illo corporis ";
+  "loremskjdf fjkljsdakkk isdlirl sit amet consectetur adipisicing elit. Dolores, ipsum officiis amet placeat nesciunt assumenda voluptates! Provident officia illo corporis ";
 
 const initialState: TypingWord = {
-  textArr: text
+  wordArr: text
     .trim()
     .split(" ")
-    .map((w) => ({ word: w, level: 0, error: "error" })),
+    .map((w) => ({ word: w, error: null, typedWord: "" })),
+  correctWordArr: text.trim().split(" "),
   wordIndex: 0,
   letterIndex: 0,
 };
@@ -42,21 +44,29 @@ const typingWordSlice = createSlice({
     resetLetterIndex(state) {
       state.letterIndex = 0;
     },
+    changeWordIndex(state, action: PayloadAction<number>) {
+      state.wordIndex = action.payload;
+    },
+    changeLetterIndex(state, action: PayloadAction<number>) {
+      state.letterIndex = action.payload;
+    },
     changePropOfWord(state, action: PayloadAction<ChangePropOfWordPayload>) {
       const { index, prop } = action.payload;
-      if (index >= 0 && index < state.textArr.length) {
-        state.textArr[index] = prop;
+      if (index >= 0 && index < state.wordArr.length) {
+        state.wordArr[index] = prop;
       }
     },
   },
 });
 
 export const {
-  increaseWordIndex,
-  decreaseWordIndex,
-  increaseLetterIndex,
-  decreaseLetterIndex,
-  resetLetterIndex,
+  // increaseWordIndex,
+  // decreaseWordIndex,
+  // increaseLetterIndex,
+  // decreaseLetterIndex,
+  // resetLetterIndex,
+  changeWordIndex,
+  changeLetterIndex,
   changePropOfWord,
 } = typingWordSlice.actions;
 export default typingWordSlice.reducer;

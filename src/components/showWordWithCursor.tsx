@@ -6,8 +6,11 @@ import { increaseLevel } from "@/lib/features/typingParagraphProp/typingParagrap
 import { gap } from "@/lib/constants";
 
 interface Props {
-  wordProp: TextArr;
+  wordProp: wordProp;
   index: number;
+  wordIndex: number;
+  cursorRef: React.RefObject<HTMLDivElement>;
+  currentWordRef: React.RefObject<HTMLDivElement>;
   letterIndex: number;
   isCurrent: boolean;
 }
@@ -15,10 +18,12 @@ interface Props {
 const ShowWordWithCursor = ({
   wordProp,
   index,
+  wordIndex,
+  cursorRef,
+  currentWordRef,
   letterIndex,
   isCurrent,
 }: Props) => {
-  const tempDivRef = useRef<HTMLDivElement>(null);
   const {
     width,
     level,
@@ -28,9 +33,9 @@ const ShowWordWithCursor = ({
 
   function changeLevelOfTypingParagraph() {
     const elementRect =
-      tempDivRef.current?.parentElement?.getBoundingClientRect();
+      cursorRef.current?.parentElement?.getBoundingClientRect();
     const parentRect =
-      tempDivRef.current?.parentElement?.parentElement?.getBoundingClientRect();
+      cursorRef.current?.parentElement?.parentElement?.getBoundingClientRect();
 
     if (elementRect && parentRect) {
       const topRelativeToParent = elementRect.top - parentRect.top;
@@ -57,73 +62,93 @@ const ShowWordWithCursor = ({
         (totalHeight + gap * letterHeight) / (letterHeight + gap * letterHeight)
       );
 
-      console.log(
-        h,
-        totalLevel - 1,
-        level,
-        parentRect.height,
-        letterHeight,
-        gap * letterHeight
-      );
+      // console.log(
+      //   h,
+      //   totalLevel - 1,
+      //   level,
+      //   parentRect.height,
+      //   letterHeight,
+      //   gap * letterHeight
+      // );
 
       if (h === totalLevel - 1) {
         dispatch(increaseLevel({ level: Math.max(0, h - 2) }));
-        console.log("first change", h, totalLevel - 1);
+        // console.log("first change", h, totalLevel - 1);
       } else if (h > 1) {
         dispatch(increaseLevel({ level: h - 1 }));
-        console.log("second change");
+        // console.log("second change");
       }
     }
   }
 
-  function debounce<T extends (...args: any[]) => void>(
-    func: T,
-    delay: number
-  ): T {
-    let timeoutId: ReturnType<typeof setTimeout>;
+  // function debounce<T extends (...args: any[]) => void>(
+  //   func: T,
+  //   delay: number
+  // ): T {
+  //   let timeoutId: ReturnType<typeof setTimeout>;
 
-    return function (this: unknown, ...args: Parameters<T>) {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => func.apply(this, args), delay);
-    } as T;
-  }
+  //   return function (this: unknown, ...args: Parameters<T>) {
+  //     clearTimeout(timeoutId);
+  //     timeoutId = setTimeout(() => func.apply(this, args), delay);
+  //   } as T;
+  // }
 
-  useEffect(() => {
-    const debouncedChangeLevel = debounce(changeLevelOfTypingParagraph, 300);
+  // useEffect(() => {
+  //   const debouncedChangeLevel = debounce(changeLevelOfTypingParagraph, 300);
 
-    function handleResize() {
-      debouncedChangeLevel();
-    }
+  //   function handleResize() {
+  //     debouncedChangeLevel();
+  //   }
 
-    window.addEventListener("resize", handleResize);
+  //   window.addEventListener("resize", handleResize);
 
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener("resize", handleResize);
+  //   };
+  // }, []);
 
-  useEffect(() => {
-    changeLevelOfTypingParagraph();
-  }, [letterIndex]);
+  // useEffect(() => {
+  //   changeLevelOfTypingParagraph();
+  // }, [letterIndex]);
 
   return (
-    <div className="flex relative">
-      {isCurrent && (
-        <motion.div
-          layoutId="cursor"
-          ref={tempDivRef}
-          initial={{ x: 0 }}
-          animate={{ x: width * letterIndex + letterIndex * (width / 4) }}
-          transition={{ duration: 0.2 }}
-          className=" absolute h-full bg-foreground rounded-lg animate-pulse"
-          style={{ width: width / 4, left: -width / 4 }}
-        />
-      )}
-      <div className=" flex " style={{ gap: width / 4 }}>
+    <div className="flex relative " ref={isCurrent ? currentWordRef : null}>
+      <div className=" flex z-10" style={{ gap: width / 4 }}>
         {wordProp.word.split("").map((letter, index) => (
-          <ShowLetterWithCursor letter={letter} key={index} />
+          <ShowLetterWithCursor
+            letter={letter}
+            key={index}
+            error={wordProp.error?.letterError[index]}
+          />
         ))}
       </div>
+      {/* {isCurrent && (
+        <motion.div
+          layoutId="cursor"
+          ref={cursorRef}
+          // initial={{ x: width * letterIndex + letterIndex * (width / 4) }}
+          // initial={false}
+          // layout="preserve-aspect"
+          animate={{ x: width * letterIndex + letterIndex * (width / 4) }}
+          transition={{
+            duration: 0.1,
+            ease: "easeOut",
+            // type: "spring",
+            // bounce: 0,
+            // bounceDamping: 1,
+            // min: 0,
+            // max: 0,
+            // power: 1,
+            // stiffness: 1000000,
+          }}
+          className=" absolute h-full bg-foreground rounded-lg animate-pulse z-10  "
+          style={{ width: width / 4, left: -width / 4 }}
+        />
+      )} */}
+
+      {!isCurrent && index < wordIndex && wordProp.error?.error && (
+        <div className=" word-error "></div>
+      )}
 
       {/* {isCurrent && word.length === letterIndex ? (
         

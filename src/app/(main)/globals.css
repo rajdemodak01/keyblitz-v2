@@ -13,6 +13,7 @@
     --accent: 240 0% 13%;
     --accent-foreground: 60 0% 100%;
     --destructive: 0 60% 50%;
+    --destructive-light: 0 60% 60%;
     --destructive-foreground: 0 0% 98%;
     --muted: 240 5% 25%;
     --muted-foreground: 60 5% 85%;
@@ -30,6 +31,7 @@
 .theme-dark {
   --background: 240 5% 6%;
   --foreground: 60 5% 90%;
+  --foreground-light: 60 5% 50%;
   --primary: 240 0% 90%;
   --primary-foreground: 60 0% 0%;
   --secondary: 240 4% 15%;
@@ -37,6 +39,7 @@
   --accent: 240 0% 13%;
   --accent-foreground: 60 0% 100%;
   --destructive: 0 60% 50%;
+  --destructive-light: 0 60% 60%;
   --destructive-foreground: 0 0% 98%;
   --muted: 240 5% 25%;
   --muted-foreground: 60 5% 85%;
@@ -53,6 +56,7 @@
 .theme-windows98 {
   --background: 0 0% 85%;
   --foreground: 0 0% 10%;
+  --foreground-light: 0 0% 50%;
   --primary: 0 0% 80%;
   --primary-foreground: 0 0% 10%;
   --secondary: 0 0% 70%;
@@ -60,6 +64,7 @@
   --accent: 240 100% 50%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 84% 32%;
+  --destructive-light: 0 84% 42%;
   --destructive-foreground: 0 0% 98%;
   --muted: 0 0% 75%;
   --muted-foreground: 0 0% 10%;
@@ -76,6 +81,7 @@
 .theme-pastel {
   --background: 210 100% 97%;
   --foreground: 339 20% 20%;
+  --foreground-light: 339 20% 60%;
   --primary: 308 56% 85%;
   --primary-foreground: 210 22% 22%;
   --secondary: 196 75% 88%;
@@ -83,6 +89,7 @@
   --accent: 211 86% 70%;
   --accent-foreground: 210 22% 22%;
   --destructive: 0 93% 73%;
+  --destructive-light: 0 93% 83%;
   --destructive-foreground: 210 22% 22%;
   --muted: 210 100% 95%;
   --muted-foreground: 210 22% 22%;
@@ -99,6 +106,7 @@
 .theme-deepsea {
   --background: 210 100% 6%;
   --foreground: 180 100% 90%;
+  --foreground-light: 180 100% 40%;
   --primary: 200 100% 28%;
   --primary-foreground: 180 100% 90%;
   --secondary: 203 23% 30%;
@@ -106,6 +114,7 @@
   --accent: 198 70% 50%;
   --accent-foreground: 185 10% 13%;
   --destructive: 0 98% 44%;
+  --destructive-light: 0 98% 54%;
   --destructive-foreground: 0 0% 100%;
   --muted: 200 50% 30%;
   --muted-foreground: 180 100% 90%;
@@ -122,6 +131,7 @@
 .theme-daylight {
   --background: 36 39% 88%;
   --foreground: 36 45% 15%;
+  --foreground-light: 36 45% 55%;
   --primary: 36 45% 70%;
   --primary-foreground: 36 45% 11%;
   --secondary: 40 35% 77%;
@@ -129,6 +139,7 @@
   --accent: 36 64% 57%;
   --accent-foreground: 36 72% 17%;
   --destructive: 0 84% 37%;
+  --destructive-light: 0 84% 47%;
   --destructive-foreground: 0 0% 98%;
   --muted: 36 33% 75%;
   --muted-foreground: 36 45% 25%;
@@ -145,5 +156,29 @@
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .word-error {
+    position: absolute;
+    bottom: 4%;
+    width: 100%;
+    height: 0.12em;
+    border-radius: 10px;
+    background-color: hsl(var(--destructive));
+    z-index: 1;
+  }
+
+  .glow {
+    text-shadow: 1px 0 0 hsl(var(--background)), -1px 0 0 hsl(var(--background)),
+      0 1px 0 hsl(var(--background)), 1px 1px 0 hsl(var(--background)),
+      -1px 1px 0 hsl(var(--background));
+  }
+
+  .soft-error {
+    color: hsl(var(--destructive-light));
+  }
+
+  .dark-error {
+    color: hsl(var(--destructive));
   }
 }

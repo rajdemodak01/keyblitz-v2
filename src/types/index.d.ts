@@ -3,10 +3,13 @@ interface LetterProp {
   width: number;
 }
 
-type typingLetterError = "error";
+interface typingLetterError {
+  error: boolean;
+  letterError: number[];
+}
 
-interface TextArr {
+interface wordProp {
   word: string;
-  level: number;
-  error: typingLetterError;
+  typedWord: string; // this is useful in case of backspace is clicked
+  error: null | typingLetterError;
 }

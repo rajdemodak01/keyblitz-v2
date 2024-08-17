@@ -22,6 +22,7 @@ export default function RootLayout({
   typing,
 }: Readonly<{
   children: React.ReactNode;
+  typing?: React.ReactNode;
 }>) {
   return (
     <html lang="en">
