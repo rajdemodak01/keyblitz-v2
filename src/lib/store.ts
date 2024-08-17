@@ -1,12 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import typingWord from "./features/typingWord/typingWordSlice";
 import typingParagraphProp from "./features/typingParagraphProp/typingParagraphProp";
+import typingTestsSlice from "./features/typingTests/typingTestsSlice";
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       typingWord: typingWord,
       typingParagraphProp: typingParagraphProp,
+      typingTests: typingTestsSlice,
     },
   });
 };
