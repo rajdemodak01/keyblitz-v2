@@ -1,4 +1,12 @@
 import {
+  addEachWordError,
+  addWordTimeStamp,
+  increaseTotalCharTyped,
+  increaseTotalCorrectCharTyped,
+  setEndTest,
+  setStartTest,
+} from "@/lib/features/typingTests/typingTestsSlice";
+import {
   changeLetterIndex,
   changePropOfWord,
   changeWordIndex,
@@ -22,19 +30,21 @@ const TypingParagraphInputBox = ({
   handleBlur,
 }: Props) => {
   const [inputValue, setInputValue] = useState("");
-  const { wordArr, wordIndex, correctWordArr } = useAppSelector(
+  const { wordArr, wordIndex, letterIndex, correctWordArr } = useAppSelector(
     (state) => state.typingWord
   );
   const { width: letterWidth } = useAppSelector(
     (state) => state.typingParagraphProp
   );
+  const { startTest, endTest } = useAppSelector((state) => state.typingTests);
 
   const dispatch = useAppDispatch();
 
   function checkForError(
     index: number,
     inputElement: HTMLInputElement,
-    isNewInput: boolean
+    isNewInput: boolean,
+    newInput: null | string // null if there is now new Input
   ) {
     const { value: typedWord } = inputElement;
     const correctWord = correctWordArr[index];
@@ -59,7 +69,7 @@ const TypingParagraphInputBox = ({
                                                       2 -> dark error -> this occurs when the wrong letter is typed 
             }
     
-            */
+      */
       let wordError = typedWord.length !== correctWord.length;
       const letterError = typedWord.split("").map((letter, index) => {
         if (index > correctWord.length - 1) {
@@ -78,6 +88,21 @@ const TypingParagraphInputBox = ({
         !isNewInput ||
         typedWord.length <= correctWord.length
       ) {
+        // now check if the char typed is correct or not;
+        if (isNewInput) {
+          if (newInput === correctWord[letterIndex]) {
+            // correct character is typed
+            dispatch(increaseTotalCorrectCharTyped());
+            dispatch(increaseTotalCharTyped());
+            // console.log("correct char", newInput, correctWord[letterIndex]);
+          } else {
+            // incorrect character is typed
+            dispatch(increaseTotalCharTyped());
+            dispatch(addEachWordError(wordIndex));
+            // console.log("incorrect char", newInput, correctWord[letterIndex]);
+          }
+        }
+
         dispatch(changeLetterIndex(typedWord.length));
 
         dispatch(
@@ -96,14 +121,15 @@ const TypingParagraphInputBox = ({
       }
     }
   }
+
   return (
     <input
       type="text"
       ref={inputRef}
       value={inputValue}
+      disabled={endTest}
       className="absolute inset-0 outline-none border-none bg-transparent -z-10 appearance-none text-transparent user-select-none "
       onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-        const inputElement = e.target as HTMLInputElement;
         if (e.ctrlKey && e.key === "Backspace") {
           if (inputValue === "" && wordIndex - 1 >= 0) {
             setInputValue(wordArr[wordIndex - 1].typedWord + " ");
@@ -115,7 +141,6 @@ const TypingParagraphInputBox = ({
             setInputValue(wordArr[wordIndex - 1].typedWord + " ");
             dispatch(changeWordIndex(wordIndex - 1));
           }
-
           console.log("Backspace pressed");
         }
       }}
@@ -125,39 +150,37 @@ const TypingParagraphInputBox = ({
         const keyInput = (e.nativeEvent as InputEvent).data;
 
         if (keyInput === " ") {
-          if (inputElement.value !== " " && wordIndex < wordArr.length) {
+          if (inputElement.value !== " ") {
             inputElement.value = "";
+            if (startTest && wordIndex === wordArr.length - 1) {
+              dispatch(setEndTest());
+              console.log("The test has ended");
+            }
+            dispatch(increaseTotalCorrectCharTyped());
+            dispatch(increaseTotalCharTyped());
             dispatch(changeWordIndex(wordIndex + 1));
             dispatch(changeLetterIndex(0));
+            dispatch(
+              addWordTimeStamp({ index: wordIndex, timeStamp: Date.now() })
+            );
           } else {
             inputElement.value = "";
           }
         } else {
-          // handleUserTyping(inputElement);
-          // console.log(keyInput, inputElement.value, wordIndex - 1);
-          console.log(keyInput);
+          if (
+            wordIndex === 0 &&
+            letterIndex === 0 &&
+            keyInput !== null &&
+            !startTest
+          ) {
+            dispatch(setStartTest());
+            console.log("The test has started");
+          }
 
-          checkForError(wordIndex, inputElement, keyInput !== null);
-
-          const wordProp = wordArr[wordIndex];
-
-          wordProp.word;
-
-          // dispatch(
-          //   changePropOfWord({
-          //     index: wordIndex,
-          //     prop: { ...wordArr[wordIndex], word: inputElement.value },
-          //   })
-          // );
+          checkForError(wordIndex, inputElement, keyInput !== null, keyInput);
         }
 
         setInputValue(inputElement.value);
-
-        // Log the key input
-        // console.log(`Key input: ${keyInput}`);
-        // console.log(`value: ${inputElement.value}`);
-
-        // Handle the input event
       }}
       onFocus={handleFocus}
       onBlur={handleBlur}

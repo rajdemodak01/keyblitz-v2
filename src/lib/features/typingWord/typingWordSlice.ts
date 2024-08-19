@@ -13,7 +13,8 @@ interface ChangePropOfWordPayload {
 }
 
 const text =
-  "loremskjdf fjkljsdakkk isdlirl sit amet consectetur adipisicing elit. Dolores, ipsum officiis amet placeat nesciunt assumenda voluptates! Provident officia illo corporis ";
+  // "Lorem ipsum dolor sit amet consectetur";
+  "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Consectetur earum delectus distinctio pariatur commodi possimus vitae consequatur debitis dolores exercitationem.";
 
 const initialState: TypingWord = {
   wordArr: text
@@ -56,6 +57,15 @@ const typingWordSlice = createSlice({
         state.wordArr[index] = prop;
       }
     },
+    resetWords(state) {
+      state.wordArr = text
+        .trim()
+        .split(" ")
+        .map((w) => ({ word: w, error: null, typedWord: "" }));
+      state.correctWordArr = text.trim().split(" ");
+      state.wordIndex = 0;
+      state.letterIndex = 0;
+    },
   },
 });
 
@@ -68,5 +78,6 @@ export const {
   changeWordIndex,
   changeLetterIndex,
   changePropOfWord,
+  resetWords,
 } = typingWordSlice.actions;
 export default typingWordSlice.reducer;

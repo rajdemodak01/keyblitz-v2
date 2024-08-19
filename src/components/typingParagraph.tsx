@@ -1,6 +1,5 @@
-"use client";
 import { useAppSelector } from "@/lib/hooks";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 
 import { gap } from "@/lib/constants";
 import ChangeLevelOfTypingParagraph from "./changeLevelOfTypingParagraph";
@@ -27,14 +26,13 @@ const TypingParagraph = (props: Props) => {
       currentWordRef={currentWordRef}
       setCursorPosition={setCursorPosition}
     >
+      <Cursor cursorRef={cursorRef} cursorPosition={cursorPosition} />
       <div
         className=" relative overflow-hidden "
         style={{ height: `${letterHeight * 3 + gap * letterHeight * 2}px` }} // taking the 3 line height and 2 gap height
         onClick={focusInput}
       >
         <div className="  flex relative w-full ">
-          <Cursor cursorRef={cursorRef} cursorPosition={cursorPosition} />
-
           <WordDisplay
             typingParagraphRef={typingParagraphRef}
             cursorRef={cursorRef}

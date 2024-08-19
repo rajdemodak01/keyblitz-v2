@@ -32,7 +32,7 @@ const WordDisplay = ({
         y:
           -1 * (level * letterHeight + Math.max(0, level) * letterHeight * gap), // move the total line height as well as the gap
       }}
-      transition={{ type: "tween", duration: "0.2" }}
+      transition={{ type: "tween", duration: "0.05" }}
       style={{
         columnGap: 1.5 * letterWidth,
       }}
