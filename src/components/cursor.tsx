@@ -20,7 +20,7 @@ const Cursor = ({ cursorRef, cursorPosition }: Props) => {
         left: -letterWidth / 4,
         height: letterHeight,
         transform: `translate(${cursorPosition.left}px, ${cursorPosition.top}px)`,
-        transition: "all 0.05s ease-in-out",
+        transition: "all 0.12s ease-in-out",
       }}
     />
   );

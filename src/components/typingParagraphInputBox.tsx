@@ -1,5 +1,6 @@
 import {
   addEachWordError,
+  addSecondsWordTyped,
   addWordTimeStamp,
   increaseTotalCharTyped,
   increaseTotalCorrectCharTyped,
@@ -12,7 +13,7 @@ import {
   changeWordIndex,
 } from "@/lib/features/typingWord/typingWordSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface Props {
   inputRef: React.RefObject<HTMLInputElement>;
@@ -37,6 +38,10 @@ const TypingParagraphInputBox = ({
     (state) => state.typingParagraphProp
   );
   const { startTest, endTest } = useAppSelector((state) => state.typingTests);
+
+  // this variable is used for the addSecondsWordTyped
+  const charTypedCount = useRef<number>(0);
+  const correctCharTypedCount = useRef<number>(0);
 
   const dispatch = useAppDispatch();
 
@@ -93,11 +98,14 @@ const TypingParagraphInputBox = ({
           if (newInput === correctWord[letterIndex]) {
             // correct character is typed
             dispatch(increaseTotalCorrectCharTyped());
+            correctCharTypedCount.current++;
             dispatch(increaseTotalCharTyped());
+            charTypedCount.current++;
             // console.log("correct char", newInput, correctWord[letterIndex]);
           } else {
             // incorrect character is typed
             dispatch(increaseTotalCharTyped());
+            charTypedCount.current++;
             dispatch(addEachWordError(wordIndex));
             // console.log("incorrect char", newInput, correctWord[letterIndex]);
           }
@@ -121,6 +129,35 @@ const TypingParagraphInputBox = ({
       }
     }
   }
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout | null = null;
+
+    if (startTest && !endTest) {
+      intervalId = setInterval(() => {
+        dispatch(
+          addSecondsWordTyped({
+            charTypedCount: charTypedCount.current,
+            correctCharTypedCount: correctCharTypedCount.current,
+          })
+        );
+
+        charTypedCount.current = 0;
+        correctCharTypedCount.current = 0;
+      }, 1000);
+    }
+
+    if (endTest && intervalId) {
+      clearInterval(intervalId);
+      intervalId = null;
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [startTest, endTest, dispatch]);
 
   return (
     <input
@@ -157,7 +194,9 @@ const TypingParagraphInputBox = ({
               console.log("The test has ended");
             }
             dispatch(increaseTotalCorrectCharTyped());
+            charTypedCount.current++;
             dispatch(increaseTotalCharTyped());
+            correctCharTypedCount.current++;
             dispatch(changeWordIndex(wordIndex + 1));
             dispatch(changeLetterIndex(0));
             dispatch(

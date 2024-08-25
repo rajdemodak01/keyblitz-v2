@@ -8,6 +8,11 @@ interface TypingTestsProp {
   startTime: number;
   endTime: number;
   eachWordTimeSpent: number[];
+  secondsCharTyped: {
+    charTypedCount: number;
+    correctCharTypedCount: number;
+    errorCharTypedCount: number;
+  }[];
   eachWordError: number[];
   totalCharTyped: number;
   totalCorrectCharTyped: number;
@@ -22,6 +27,7 @@ const initialState: TypingTestsProp = {
   startTime: 0,
   endTime: 0,
   eachWordTimeSpent: [],
+  secondsCharTyped: [],
   eachWordError: [],
   totalCharTyped: 0,
   totalCorrectCharTyped: 0,
@@ -83,6 +89,23 @@ const typingTests = createSlice({
       state.eachWordTimeSpent[index] = timeStamp;
     },
 
+    addSecondsWordTyped(
+      state,
+      action: PayloadAction<{
+        charTypedCount: number;
+        correctCharTypedCount: number;
+      }>
+    ) {
+      console.log(action.payload);
+
+      state.secondsCharTyped.push({
+        charTypedCount: action.payload.charTypedCount,
+        correctCharTypedCount: action.payload.correctCharTypedCount,
+        errorCharTypedCount:
+          action.payload.charTypedCount - action.payload.correctCharTypedCount,
+      });
+    },
+
     addEachWordError(state, action: PayloadAction<number>) {
       const index = action.payload;
       if (state.eachWordError[index] === undefined) {
@@ -101,6 +124,7 @@ export const {
   setEndTest,
   resetTest,
   addWordTimeStamp,
+  addSecondsWordTyped,
   addEachWordError,
 } = typingTests.actions;
 

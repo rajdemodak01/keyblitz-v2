@@ -15,7 +15,7 @@ const ParentDiv = () => {
   //   });
   // }, []);
 
-  const handleClick = (index) => {
+  const handleClick = (index: number) => {
     setActiveIndex(index);
   };
 
