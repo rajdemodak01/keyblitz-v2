@@ -96,7 +96,7 @@ const typingTests = createSlice({
         correctCharTypedCount: number;
       }>
     ) {
-      console.log(action.payload);
+      // console.log(action.payload);
 
       state.secondsCharTyped.push({
         charTypedCount: action.payload.charTypedCount,

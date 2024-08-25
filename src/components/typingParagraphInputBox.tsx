@@ -53,7 +53,7 @@ const TypingParagraphInputBox = ({
   ) {
     const { value: typedWord } = inputElement;
     const correctWord = correctWordArr[index];
-    const wordToShow = typedWord + correctWord.slice(typedWord.length);
+    const wordToShow = correctWord + typedWord.slice(correctWord.length);
 
     const cursorRect = currentWordRef.current?.getBoundingClientRect();
     const parentRect = typingParagraphRef.current?.getBoundingClientRect();
