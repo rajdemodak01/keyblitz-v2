@@ -4,14 +4,20 @@ import React, { useEffect, useState } from "react";
 import {
   CartesianGrid,
   ComposedChart,
+  Label,
   Legend,
   Line,
   ResponsiveContainer,
   Scatter,
   Tooltip,
+  TooltipProps,
   XAxis,
   YAxis,
 } from "recharts";
+import {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 
 interface DataPoint {
   index: number;
@@ -42,6 +48,46 @@ const CustomCircle = (props: any) => {
       <path d="M2.172 2.172l3.656 3.656m0-3.656l-3.656 3.656" />
     </svg>
   );
+};
+
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: TooltipProps<ValueType, NameType>) => {
+  if (active && payload && payload.length) {
+    console.log(payload, label);
+
+    return (
+      <div className=" bg-background-transparent p-2 rounded-lg shadow-[inset_0_0_0_1px] shadow-border ">
+        {/* <p className="">{`${label} : ${payload[0].value}`}</p> */}
+        {/* <p className="">{getIntroOfPage(label)}</p> */}
+        <p className=" text-xs">{`${label}`}</p>
+        <div className=" flex gap-2 items-center ">
+          <div
+            className={`w-3 h-3`}
+            style={{ backgroundColor: payload[0].color }}
+          ></div>
+          <p className=" text-xs">{`${payload[0].name}: ${payload[0].value}`}</p>
+        </div>
+        <div className=" flex gap-2 items-center ">
+          <div
+            className={`w-3 h-3`}
+            style={{ backgroundColor: payload[1].color }}
+          ></div>
+          <p className=" text-xs">{`${payload[1].name}: ${payload[1].value}`}</p>
+        </div>
+        {payload.length > 2 && (
+          <div className=" flex gap-2 items-center ">
+            <div className={`w-3 h-3 bg-destructive `}></div>
+            <p className=" text-xs">{`${payload[2].name}: ${payload[2].value}`}</p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return null;
 };
 
 const Chart = () => {
@@ -90,27 +136,17 @@ const Chart = () => {
       >
         <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
         <XAxis dataKey="index" />
-        <YAxis
-          yAxisId="left-axis"
-          label={{ value: "WPM", angle: -90, position: "insideLeft" }}
-        />
+        <YAxis yAxisId="left-axis">
+          <Label value={"Words per Minute"} angle={-90} dx={-15} />
+        </YAxis>
         <YAxis
           yAxisId="right-axis"
           orientation="right"
-          label={{ value: "Error", angle: 90, position: "insideRight" }}
           domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.2)]}
-        />
-        <Tooltip
-          contentStyle={{
-            backgroundColor: "hsl(var(--background))",
-            border: "1px solid hsl(var(--border))",
-            borderRadius: "8px",
-            padding: "10px",
-            color: "hsl(var(--foreground))",
-          }}
-          animationDuration={150}
-        />
-        <Legend />
+        >
+          <Label value="Error" angle={90} dx={15} />
+        </YAxis>
+        <Tooltip content={<CustomTooltip />} animationDuration={150} />
         <Line
           type="monotone"
           yAxisId="left-axis"
@@ -124,8 +160,7 @@ const Chart = () => {
           type="monotone"
           yAxisId="left-axis"
           dataKey="rawWPM"
-          stroke="hsl(var(--foreground))"
-          opacity={0.4}
+          stroke="hsl(var(--foreground-light))"
           name="Raw WPM"
           strokeWidth={2}
           isAnimationActive={false}
