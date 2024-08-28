@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface TypingTestsProp {
   startTest: boolean;
+  pauseTest: boolean;
   endTest: boolean;
   totalTimeSpent: number;
   startTime: number;
@@ -22,6 +23,7 @@ interface TypingTestsProp {
 
 const initialState: TypingTestsProp = {
   startTest: false,
+  pauseTest: false,
   endTest: false,
   totalTimeSpent: 0,
   startTime: 0,
@@ -44,10 +46,14 @@ const typingTests = createSlice({
     // }
     setStartTest(state) {
       state.startTest = true;
+      state.endTest = false;
+      state.pauseTest = false;
       state.startTime = Date.now();
     },
     setEndTest(state) {
       state.endTest = true;
+      state.startTest = false;
+      state.pauseTest = false;
       state.endTime = Date.now();
       //   const totalTimeMs = state.endTime - state.startTime;
       //   state.totalTimeSpent += totalTimeMs;
@@ -64,6 +70,16 @@ const typingTests = createSlice({
       //     `(${totalTimeMs} ms total)`
       //   );
     },
+    setPauseTest(state) {
+      state.pauseTest = true;
+
+      const { totalTimeMs } = calculateTimeDiff(state.startTime, Date.now());
+
+      state.totalTimeSpent += totalTimeMs;
+
+      state.startTime = 0;
+      state.endTime = 0;
+    },
     increaseTotalCharTyped(state) {
       state.totalCharTyped += 1;
     },
@@ -76,6 +92,9 @@ const typingTests = createSlice({
       state.totalTimeSpent = 0;
       state.startTime = 0;
       state.endTime = 0;
+      state.eachWordTimeSpent = [];
+      state.secondsCharTyped = [];
+      state.eachWordError = [];
       state.totalCharTyped = 0;
       state.totalCorrectCharTyped = 0;
       state.wpm = -1;
@@ -96,7 +115,7 @@ const typingTests = createSlice({
         correctCharTypedCount: number;
       }>
     ) {
-      // console.log(action.payload);
+      console.log(action.payload);
 
       state.secondsCharTyped.push({
         charTypedCount: action.payload.charTypedCount,
@@ -122,6 +141,7 @@ export const {
   increaseTotalCorrectCharTyped,
   setStartTest,
   setEndTest,
+  setPauseTest,
   resetTest,
   addWordTimeStamp,
   addSecondsWordTyped,

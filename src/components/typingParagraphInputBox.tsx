@@ -5,6 +5,7 @@ import {
   increaseTotalCharTyped,
   increaseTotalCorrectCharTyped,
   setEndTest,
+  setPauseTest,
   setStartTest,
 } from "@/lib/features/typingTests/typingTestsSlice";
 import {
@@ -37,7 +38,9 @@ const TypingParagraphInputBox = ({
   const { width: letterWidth } = useAppSelector(
     (state) => state.typingParagraphProp
   );
-  const { startTest, endTest } = useAppSelector((state) => state.typingTests);
+  const { startTest, endTest, pauseTest, totalTimeSpent } = useAppSelector(
+    (state) => state.typingTests
+  );
 
   // this variable is used for the addSecondsWordTyped
   const charTypedCount = useRef<number>(0);
@@ -130,34 +133,54 @@ const TypingParagraphInputBox = ({
     }
   }
 
+  function handleTestPauseWhenBlurred() {
+    if (startTest && !endTest) {
+      dispatch(setPauseTest());
+    }
+  }
+
   useEffect(() => {
     let intervalId: NodeJS.Timeout | null = null;
 
-    if (startTest && !endTest) {
-      intervalId = setInterval(() => {
-        dispatch(
-          addSecondsWordTyped({
-            charTypedCount: charTypedCount.current,
-            correctCharTypedCount: correctCharTypedCount.current,
-          })
-        );
+    const intervalFunction = () => {
+      console.log(
+        "dispatch function is being called -> ",
+        charTypedCount.current,
+        correctCharTypedCount.current
+      );
 
-        charTypedCount.current = 0;
-        correctCharTypedCount.current = 0;
-      }, 1000);
+      dispatch(
+        addSecondsWordTyped({
+          charTypedCount: charTypedCount.current,
+          correctCharTypedCount: correctCharTypedCount.current,
+        })
+      );
+
+      charTypedCount.current = 0;
+      correctCharTypedCount.current = 0;
+    };
+
+    if (startTest && !endTest && !pauseTest) {
+      intervalId = setInterval(intervalFunction, 1000);
     }
 
-    if (endTest && intervalId) {
+    if ((endTest || pauseTest) && intervalId) {
+      if (charTypedCount.current > 0 || correctCharTypedCount.current > 0) {
+        intervalFunction();
+      }
       clearInterval(intervalId);
       intervalId = null;
     }
 
     return () => {
       if (intervalId) {
+        if (charTypedCount.current > 0 || correctCharTypedCount.current > 0) {
+          intervalFunction();
+        }
         clearInterval(intervalId);
       }
     };
-  }, [startTest, endTest, dispatch]);
+  }, [startTest, endTest, pauseTest]);
 
   return (
     <input
@@ -165,7 +188,7 @@ const TypingParagraphInputBox = ({
       ref={inputRef}
       value={inputValue}
       disabled={endTest}
-      className="absolute inset-0 outline-none border-none bg-transparent -z-10 appearance-none text-transparent user-select-none "
+      className="  absolute inset-0 outline-none border-none bg-transparent -z-10 appearance-none text-transparent user-select-none "
       onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.ctrlKey && e.key === "Backspace") {
           if (inputValue === "" && wordIndex - 1 >= 0) {
@@ -179,6 +202,17 @@ const TypingParagraphInputBox = ({
             dispatch(changeWordIndex(wordIndex - 1));
           }
           console.log("Backspace pressed");
+        } else if (
+          e.key === "Enter" ||
+          e.key === "Tab" ||
+          e.key === "Escape" ||
+          e.key === "ArrowUp" ||
+          e.key === "ArrowDown" ||
+          e.key === "ArrowLeft" ||
+          e.key === "ArrowRight" ||
+          (e.ctrlKey && e.key === "a")
+        ) {
+          e.preventDefault();
         }
       }}
       onInput={(e: React.FormEvent<HTMLInputElement>) => {
@@ -192,11 +226,13 @@ const TypingParagraphInputBox = ({
             if (startTest && wordIndex === wordArr.length - 1) {
               dispatch(setEndTest());
               console.log("The test has ended");
+            } else if (pauseTest !== false) {
+              dispatch(setStartTest());
             }
             dispatch(increaseTotalCorrectCharTyped());
             charTypedCount.current++;
             dispatch(increaseTotalCharTyped());
-            correctCharTypedCount.current++;
+            // correctCharTypedCount.current++;
             dispatch(changeWordIndex(wordIndex + 1));
             dispatch(changeLetterIndex(0));
             dispatch(
@@ -214,15 +250,19 @@ const TypingParagraphInputBox = ({
           ) {
             dispatch(setStartTest());
             console.log("The test has started");
+          } else if (pauseTest !== false) {
+            dispatch(setStartTest());
           }
-
           checkForError(wordIndex, inputElement, keyInput !== null, keyInput);
         }
 
         setInputValue(inputElement.value);
       }}
       onFocus={handleFocus}
-      onBlur={handleBlur}
+      onBlur={() => {
+        handleTestPauseWhenBlurred();
+        handleBlur();
+      }}
       autoComplete="off"
       spellCheck="false"
     />

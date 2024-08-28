@@ -56,8 +56,6 @@ const CustomTooltip = ({
   label,
 }: TooltipProps<ValueType, NameType>) => {
   if (active && payload && payload.length) {
-    console.log(payload, label);
-
     return (
       <div className=" bg-background-transparent p-2 rounded-lg shadow-[inset_0_0_0_1px] shadow-border ">
         {/* <p className="">{`${label} : ${payload[0].value}`}</p> */}
@@ -97,6 +95,8 @@ const Chart = () => {
   const { secondsCharTyped } = useAppSelector((state) => state.typingTests);
 
   useEffect(() => {
+    console.log(secondsCharTyped);
+
     const rawData = secondsCharTyped.map((data, index) => ({
       index: index + 1,
       wpm: calculateWpm(data.correctCharTypedCount / 5, 1000),
@@ -137,14 +137,14 @@ const Chart = () => {
         <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
         <XAxis dataKey="index" />
         <YAxis yAxisId="left-axis">
-          <Label value={"Words per Minute"} angle={-90} dx={-15} />
+          <Label value={"Words per Minute"} angle={-90} dx={-25} />
         </YAxis>
         <YAxis
           yAxisId="right-axis"
           orientation="right"
           domain={[0, (dataMax: number) => Math.ceil(dataMax * 1.2)]}
         >
-          <Label value="Error" angle={90} dx={15} />
+          <Label value="Error" angle={90} dx={25} />
         </YAxis>
         <Tooltip content={<CustomTooltip />} animationDuration={150} />
         <Line
