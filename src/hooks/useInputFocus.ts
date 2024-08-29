@@ -1,6 +1,13 @@
-import { use, useEffect, useRef, useState } from "react";
+import { resetTest } from "@/lib/features/typingTests/typingTestsSlice";
+import { useAppDispatch } from "@/lib/hooks";
+import { useEffect, useRef, useState } from "react";
 
 export const useInputFocus = () => {
+  const dispatch = useAppDispatch();
+
+  const resetStates = () => {
+    dispatch(resetTest());
+  };
   const [inputIsFocused, setInputIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -15,5 +22,12 @@ export const useInputFocus = () => {
     focusInput();
   }, []);
 
-  return { inputRef, inputIsFocused, focusInput, handleFocus, handleBlur };
+  return {
+    resetStates,
+    inputRef,
+    inputIsFocused,
+    focusInput,
+    handleFocus,
+    handleBlur,
+  };
 };

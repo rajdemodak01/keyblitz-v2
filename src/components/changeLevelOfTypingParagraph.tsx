@@ -1,7 +1,7 @@
 import { gap } from "@/lib/constants";
 import { increaseLevel } from "@/lib/features/typingParagraphProp/typingParagraphProp";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 
 interface Props {
   children: React.ReactNode;
@@ -30,7 +30,7 @@ const ChangeLevelOfTypingParagraph = ({
 
   const dispatch = useAppDispatch();
 
-  function changeLevelOfTypingParagraph() {
+  const changeLevelOfTypingParagraph = useCallback(() => {
     const elementRect = currentWordRef.current?.getBoundingClientRect();
     const parentRect =
       currentWordRef.current?.parentElement?.getBoundingClientRect();
@@ -98,11 +98,19 @@ const ChangeLevelOfTypingParagraph = ({
         dispatch(increaseLevel({ level: h - 1 })); // for level 1
       }
     }
-  }
+  }, [
+    currentWordRef,
+    dispatch,
+    letterHeight,
+    letterIndex,
+    letterWidth,
+    level,
+    setCursorPosition,
+  ]);
 
   useEffect(() => {
     changeLevelOfTypingParagraph();
-  }, [letterIndex, wordIndex]);
+  }, [letterIndex, wordIndex, changeLevelOfTypingParagraph]);
 
   function debounce<T extends (...args: any[]) => void>(
     func: T,
@@ -128,7 +136,7 @@ const ChangeLevelOfTypingParagraph = ({
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [changeLevelOfTypingParagraph]);
 
   return <>{children}</>;
 };

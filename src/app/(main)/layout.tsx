@@ -4,6 +4,8 @@ import Header from "@/components/header";
 import { Space_Mono } from "next/font/google";
 import ThemeManager from "@/components/themeManager";
 import StoreProvider from "./storeProvider";
+import Button from "@/components/ui/Button";
+import ChaseTheCursor from "@/components/ChaseTheCursor";
 
 const spaceMono = Space_Mono({
   weight: ["400", "700"],
@@ -31,11 +33,18 @@ export default function RootLayout({
           <div
             className={
               `${spaceMono.variable} font-sans` +
-              " max-w-screen-xl mx-auto h-svh "
+              " px-4 xs:w-[450px] sm:w-[600px] md:w-[740px] lg:w-[980px] xl:w-[1200px]   mx-auto h-svh "
             }
           >
             <Header />
-            {typing}
+            {/* <div>
+              <Button size="small" className=" block ml-auto">
+                Chase the cursor
+              </Button>
+            </div> */}
+            <div className=" mt-8">{typing}</div>
+
+            <ChaseTheCursor />
             {/* {children} */}
           </div>
         </ThemeManager>

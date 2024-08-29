@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import typingWord from "./features/typingWord/typingWordSlice";
 import typingParagraphProp from "./features/typingParagraphProp/typingParagraphProp";
 import typingTestsSlice from "./features/typingTests/typingTestsSlice";
+import ghostCursorSlice from "./features/ghostCursor/ghostCursor";
 
 export const makeStore = () => {
   return configureStore({
@@ -9,6 +10,7 @@ export const makeStore = () => {
       typingWord: typingWord,
       typingParagraphProp: typingParagraphProp,
       typingTests: typingTestsSlice,
+      ghostCursor: ghostCursorSlice,
     },
   });
 };

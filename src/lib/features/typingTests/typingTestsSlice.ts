@@ -19,6 +19,7 @@ interface TypingTestsProp {
   totalCorrectCharTyped: number;
   wpm: number;
   accuracy: number;
+  resetTrigger: boolean;
 }
 
 const initialState: TypingTestsProp = {
@@ -35,6 +36,7 @@ const initialState: TypingTestsProp = {
   totalCorrectCharTyped: 0,
   wpm: -1,
   accuracy: -1,
+  resetTrigger: false,
 };
 
 const typingTests = createSlice({
@@ -133,6 +135,10 @@ const typingTests = createSlice({
         state.eachWordError[index]++;
       }
     },
+
+    resetTrigger(state) {
+      state.resetTrigger = !state.resetTrigger;
+    },
   },
 });
 
@@ -146,6 +152,7 @@ export const {
   addWordTimeStamp,
   addSecondsWordTyped,
   addEachWordError,
+  resetTrigger,
 } = typingTests.actions;
 
 export default typingTests.reducer;

@@ -22,6 +22,8 @@ interface Props {
   typingParagraphRef: React.RefObject<HTMLDivElement>;
   handleFocus: () => void;
   handleBlur: () => void;
+  isModalOpen: boolean;
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const TypingParagraphInputBox = ({
@@ -30,6 +32,8 @@ const TypingParagraphInputBox = ({
   typingParagraphRef,
   handleFocus,
   handleBlur,
+  isModalOpen,
+  setIsModalOpen,
 }: Props) => {
   const [inputValue, setInputValue] = useState("");
   const { wordArr, wordIndex, letterIndex, correctWordArr } = useAppSelector(
@@ -38,7 +42,7 @@ const TypingParagraphInputBox = ({
   const { width: letterWidth } = useAppSelector(
     (state) => state.typingParagraphProp
   );
-  const { startTest, endTest, pauseTest, totalTimeSpent } = useAppSelector(
+  const { startTest, endTest, pauseTest, resetTrigger } = useAppSelector(
     (state) => state.typingTests
   );
 
@@ -180,14 +184,19 @@ const TypingParagraphInputBox = ({
         clearInterval(intervalId);
       }
     };
-  }, [startTest, endTest, pauseTest]);
+  }, [dispatch, startTest, endTest, pauseTest]);
+
+  useEffect(() => {
+    setInputValue("");
+  }, [resetTrigger]);
 
   return (
     <input
       type="text"
       ref={inputRef}
+      id="main-user-typing-cursor"
       value={inputValue}
-      disabled={endTest}
+      disabled={endTest || isModalOpen}
       className="  absolute inset-0 outline-none border-none bg-transparent -z-10 appearance-none text-transparent user-select-none "
       onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.ctrlKey && e.key === "Backspace") {
@@ -202,10 +211,12 @@ const TypingParagraphInputBox = ({
             dispatch(changeWordIndex(wordIndex - 1));
           }
           console.log("Backspace pressed");
+        } else if (e.key === "Escape") {
+          setIsModalOpen(true);
+          handleBlur();
         } else if (
           e.key === "Enter" ||
-          e.key === "Tab" ||
-          e.key === "Escape" ||
+          // e.key === "Tab" ||
           e.key === "ArrowUp" ||
           e.key === "ArrowDown" ||
           e.key === "ArrowLeft" ||

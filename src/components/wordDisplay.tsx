@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
-import { useAppSelector } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import ShowWordWithCursor from "./showWordWithCursor";
 import { gap } from "@/lib/constants";
 
@@ -8,12 +8,14 @@ interface Props {
   typingParagraphRef: React.RefObject<HTMLDivElement>;
   cursorRef: React.RefObject<HTMLDivElement>;
   currentWordRef: React.RefObject<HTMLDivElement>;
+  showCursor: boolean;
 }
 
 const WordDisplay = ({
   typingParagraphRef,
   cursorRef,
   currentWordRef,
+  showCursor,
 }: Props) => {
   const {
     level,
@@ -47,6 +49,7 @@ const WordDisplay = ({
           currentWordRef={currentWordRef}
           isCurrent={index === wordIndex}
           letterIndex={letterIndex}
+          showCursor={showCursor}
           key={index}
         />
       ))}

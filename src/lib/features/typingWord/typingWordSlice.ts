@@ -14,7 +14,8 @@ interface ChangePropOfWordPayload {
 
 const text =
   // "Lorem ipsum dolor sit amet consectetur";
-  "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Consectetur earum delectus distinctio pariatur commodi possimus vitae consequatur debitis dolores exercitationem.";
+  // "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Consectetur earum delectus distinctio pariatur commodi possimus vitae consequatur debitis dolores exercitationem.";
+  "One of the most intriguing questions about aliens is why, if they exist, we haven't encountered them yet. This question is central to the Fermi Paradox, named after physicist Enrico Fermi.";
 
 const initialState: TypingWord = {
   wordArr: text
@@ -30,21 +31,6 @@ const typingWordSlice = createSlice({
   name: "typingWordSlice",
   initialState,
   reducers: {
-    increaseWordIndex(state) {
-      state.wordIndex++;
-    },
-    decreaseWordIndex(state) {
-      state.wordIndex--;
-    },
-    increaseLetterIndex(state) {
-      state.letterIndex++;
-    },
-    decreaseLetterIndex(state) {
-      state.letterIndex--;
-    },
-    resetLetterIndex(state) {
-      state.letterIndex = 0;
-    },
     changeWordIndex(state, action: PayloadAction<number>) {
       state.wordIndex = action.payload;
     },
@@ -70,11 +56,6 @@ const typingWordSlice = createSlice({
 });
 
 export const {
-  // increaseWordIndex,
-  // decreaseWordIndex,
-  // increaseLetterIndex,
-  // decreaseLetterIndex,
-  // resetLetterIndex,
   changeWordIndex,
   changeLetterIndex,
   changePropOfWord,

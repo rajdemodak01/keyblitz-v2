@@ -1,9 +1,7 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ShowLetterWithCursor from "./showLetterWithCursor";
 import { motion } from "framer-motion";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { increaseLevel } from "@/lib/features/typingParagraphProp/typingParagraphProp";
-import { gap } from "@/lib/constants";
+import { useAppSelector } from "@/lib/hooks";
 
 interface Props {
   wordProp: wordProp;
@@ -13,6 +11,7 @@ interface Props {
   currentWordRef: React.RefObject<HTMLDivElement>;
   letterIndex: number;
   isCurrent: boolean;
+  showCursor: boolean;
 }
 
 const ShowWordWithCursor = ({
@@ -23,96 +22,33 @@ const ShowWordWithCursor = ({
   currentWordRef,
   letterIndex,
   isCurrent,
+  showCursor,
 }: Props) => {
-  const {
-    width,
-    level,
-    height: letterHeight,
-  } = useAppSelector((state) => state.typingParagraphProp);
-  const dispatch = useAppDispatch();
+  const [leftPos, setLeftPos] = useState(0); // this is the normal curosor position
+  const [ghostsLeftPos, setGhostsLeftPos] = useState<number[]>([]); // since we can have many ghost cursors
+  const { width } = useAppSelector((state) => state.typingParagraphProp);
+  const { cursors } = useAppSelector((state) => state.ghostCursor);
 
-  function changeLevelOfTypingParagraph() {
-    const elementRect =
-      cursorRef.current?.parentElement?.getBoundingClientRect();
-    const parentRect =
-      cursorRef.current?.parentElement?.parentElement?.getBoundingClientRect();
+  useEffect(() => {
+    if (isCurrent) setLeftPos(width * letterIndex + letterIndex * (width / 4));
+  }, [width, isCurrent, letterIndex]);
 
-    if (elementRect && parentRect) {
-      const topRelativeToParent = elementRect.top - parentRect.top;
-
-      /* Math for this totalLevel and h // h is the height of cursor from the overall paragraph like seen top 
-      let totalLevel = n and h is letter height and we are taking also g is the gap to height ratio in terms of rem
-
-      n * h + (n - 1) * g * h = totalHeight (ie. totalHeight = parentRect.height)
-
-      now solve for n and we get 
-      n = (totalHeight + g * h) / (h + g * h)
-
-      */
-
-      let totalHeight = parentRect.height;
-
-      const totalLevel = Math.round(
-        (totalHeight + gap * letterHeight) / (letterHeight + gap * letterHeight)
-      );
-
-      totalHeight = topRelativeToParent;
-
-      const h = Math.round(
-        (totalHeight + gap * letterHeight) / (letterHeight + gap * letterHeight)
-      );
-
-      // console.log(
-      //   h,
-      //   totalLevel - 1,
-      //   level,
-      //   parentRect.height,
-      //   letterHeight,
-      //   gap * letterHeight
-      // );
-
-      if (h === totalLevel - 1) {
-        dispatch(increaseLevel({ level: Math.max(0, h - 2) }));
-        // console.log("first change", h, totalLevel - 1);
-      } else if (h > 1) {
-        dispatch(increaseLevel({ level: h - 1 }));
-        // console.log("second change");
+  useEffect(() => {
+    const ghostPos = cursors.map((cursor, i) => {
+      if (cursor.wordIndex === index) {
+        return cursor.letterIndex * width + cursor.letterIndex * (width / 4);
       }
-    }
-  }
-
-  // function debounce<T extends (...args: any[]) => void>(
-  //   func: T,
-  //   delay: number
-  // ): T {
-  //   let timeoutId: ReturnType<typeof setTimeout>;
-
-  //   return function (this: unknown, ...args: Parameters<T>) {
-  //     clearTimeout(timeoutId);
-  //     timeoutId = setTimeout(() => func.apply(this, args), delay);
-  //   } as T;
-  // }
-
-  // useEffect(() => {
-  //   const debouncedChangeLevel = debounce(changeLevelOfTypingParagraph, 300);
-
-  //   function handleResize() {
-  //     debouncedChangeLevel();
-  //   }
-
-  //   window.addEventListener("resize", handleResize);
-
-  //   return () => {
-  //     window.removeEventListener("resize", handleResize);
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   changeLevelOfTypingParagraph();
-  // }, [letterIndex]);
+      return 0;
+    });
+    setGhostsLeftPos(ghostPos);
+  }, [width, cursors, index]);
 
   return (
-    <div className="flex relative " ref={isCurrent ? currentWordRef : null}>
+    <div
+      className="flex relative "
+      id="wordContainer"
+      ref={isCurrent ? currentWordRef : null}
+    >
       <div className=" flex z-10" style={{ gap: width / 4 }}>
         {wordProp.word.split("").map((letter, index) => (
           <ShowLetterWithCursor
@@ -122,39 +58,43 @@ const ShowWordWithCursor = ({
           />
         ))}
       </div>
-      {/* {isCurrent && (
+      {isCurrent && (
         <motion.div
           layoutId="cursor"
           ref={cursorRef}
-          // initial={{ x: width * letterIndex + letterIndex * (width / 4) }}
-          // initial={false}
-          // layout="preserve-aspect"
-          animate={{ x: width * letterIndex + letterIndex * (width / 4) }}
+          initial={{ x: leftPos }}
+          animate={{ x: leftPos }}
+          className={` absolute h-full bg-foreground rounded-lg animate-pulse z-10  ${
+            !showCursor && "!opacity-0"
+          } `}
           transition={{
-            duration: 0.1,
-            ease: "easeOut",
-            // type: "spring",
-            // bounce: 0,
-            // bounceDamping: 1,
-            // min: 0,
-            // max: 0,
-            // power: 1,
-            // stiffness: 1000000,
+            type: "tween",
+            duration: 0.15,
           }}
-          className=" absolute h-full bg-foreground rounded-lg animate-pulse z-10  "
           style={{ width: width / 4, left: -width / 4 }}
         />
-      )} */}
+      )}
+
+      {cursors.map((cursor, i) =>
+        cursor.wordIndex === index ? (
+          <motion.div
+            layoutId={`cursor-${i}`}
+            key={i}
+            initial={{ x: ghostsLeftPos[i] }}
+            animate={{ x: ghostsLeftPos[i] }}
+            className=" absolute h-full bg-ghost-cursor rounded-lg animate-pulse z-[5] "
+            transition={{
+              type: "tween",
+              duration: 0.15,
+            }}
+            style={{ width: width / 6, left: -width / 4 }}
+          />
+        ) : null
+      )}
 
       {!isCurrent && index < wordIndex && wordProp.error?.error && (
         <div className=" word-error "></div>
       )}
-
-      {/* {isCurrent && word.length === letterIndex ? (
-        
-      ) : (
-        <div className=" w-1"></div>
-      )} */}
     </div>
   );
 };

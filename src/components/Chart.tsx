@@ -125,7 +125,7 @@ const Chart = () => {
 
     setChartData(smoothedData);
     console.log(smoothedData, rawData);
-  }, []);
+  }, [secondsCharTyped]);
 
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -151,7 +151,7 @@ const Chart = () => {
           type="monotone"
           yAxisId="left-axis"
           dataKey="wpm"
-          stroke="hsl(var(--foreground))"
+          stroke="var(--foreground)"
           name="WPM"
           strokeWidth={2}
           isAnimationActive={false}
@@ -160,7 +160,7 @@ const Chart = () => {
           type="monotone"
           yAxisId="left-axis"
           dataKey="rawWPM"
-          stroke="hsl(var(--foreground-light))"
+          stroke="var(--foreground-light)"
           name="Raw WPM"
           strokeWidth={2}
           isAnimationActive={false}
@@ -168,7 +168,7 @@ const Chart = () => {
         <Scatter
           yAxisId="right-axis"
           dataKey="errorCount"
-          fill="hsl(var(--destructive))"
+          fill="var(--destructive)"
           name="Error Count"
           shape={<CustomCircle />}
           isAnimationActive={false}

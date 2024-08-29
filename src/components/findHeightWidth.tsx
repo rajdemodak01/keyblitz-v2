@@ -50,7 +50,7 @@ const FindHeightWidth = ({ children }: Props) => {
         setLetterHeightWidth({ height: data.height, width: data.width })
       );
     });
-  }, []);
+  }, [dispatch]);
 
   return <div ref={divRef}>{height !== 0 ? children : "Loading..."}</div>;
 };
