@@ -241,7 +241,7 @@ const TypingParagraphInputBox = ({
               dispatch(setStartTest());
             }
             dispatch(increaseTotalCorrectCharTyped());
-            charTypedCount.current++;
+            // charTypedCount.current++;
             dispatch(increaseTotalCharTyped());
             // correctCharTypedCount.current++;
             dispatch(changeWordIndex(wordIndex + 1));
