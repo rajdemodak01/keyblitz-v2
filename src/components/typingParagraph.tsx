@@ -49,7 +49,7 @@ const TypingParagraph = () => {
     if (!isModalOpen) {
       focusInput();
     }
-  }, [focusInput, isModalOpen]);
+  }, [isModalOpen]);
 
   return (
     <ChangeLevelOfTypingParagraph

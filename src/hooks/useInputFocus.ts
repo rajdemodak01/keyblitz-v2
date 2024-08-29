@@ -19,6 +19,7 @@ export const useInputFocus = () => {
   const handleBlur = () => setInputIsFocused(false);
 
   useEffect(() => {
+    setInputIsFocused(true);
     focusInput();
   }, []);
 

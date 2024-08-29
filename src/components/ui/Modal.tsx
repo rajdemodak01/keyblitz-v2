@@ -54,9 +54,9 @@ const Modal = (props: IModalProps) => {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -20, opacity: 0 }}
               transition={{ duration: 0.15, type: "tween" }}
-              className=" flex-1 my-[15vh] w-full xs:w-[500px] overflow-hidden pointer-events-auto "
+              className=" flex-1 my-[15vh] w-full xs:w-[500px] overflow-hidden "
             >
-              <div className=" bg-background rounded-xl ">
+              <div className=" bg-background rounded-xl pointer-events-auto ">
                 <div className="  text-foreground-light text-xl ">
                   {modalHeading ? (
                     <div className=" px-4 py-6 select-none ">
