@@ -1,92 +1,134 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Search from "@/images/search.svg";
 import ChaseCursor from "../modal/ChaseCursor";
-import { motion, AnimatePresence } from "framer-motion";
 
-interface IModalProps {
+interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const Modal = (props: IModalProps) => {
-  const { isOpen, onClose } = props;
+interface ModalOptionsProps {
+  setContent: (content: ReactNode) => void;
+  setHeading: (heading: string) => void;
+}
 
-  const [modalContent, setModalContent] = useState<ReactNode>(
-    <div className=" flex flex-col">
-      <div
-        className=" hover:bg-border px-4 cursor-pointer py-2 transition-all duration-150"
-        onClick={() => {
-          setModalContent(<ChaseCursor />);
-          setModalHeading("Chase the cursor");
-        }}
-      >
-        Chase the cursor
-      </div>
+interface ModalHeaderProps {
+  heading: string | null;
+  inputRef: React.RefObject<HTMLInputElement>;
+}
+
+const ModalOptions: React.FC<ModalOptionsProps> = ({
+  setContent,
+  setHeading,
+}) => (
+  <div className="flex flex-col">
+    <div
+      className="px-4 py-2 cursor-pointer transition-all duration-150 hover:bg-accent"
+      onClick={() => {
+        setContent(<ChaseCursor />);
+        setHeading("Chase the cursor");
+      }}
+    >
+      Chase the cursor
     </div>
-  ); // we could use queue to store the content so that when the user does back and forth, the content is not lost
+  </div>
+);
 
-  const [modalHeading, setModalHeading] = useState<string | null>(null);
+const ModalOverlay: React.FC<{ onClose: () => void }> = ({ onClose }) => (
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 0.7 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.15 }}
+    className="fixed inset-0 z-40 bg-black/70"
+    onClick={onClose}
+  />
+);
 
-  useEffect(() => {
-    setModalContent(
-      <div className=" flex flex-col">
-        <div
-          className=" hover:bg-border px-4 cursor-pointer py-2 transition-all duration-150"
-          onClick={() => {
-            setModalContent(<ChaseCursor />);
-            setModalHeading("Chase the cursor");
-          }}
-        >
-          Chase the cursor
-        </div>
+const ModalContainer: React.FC<{ children: ReactNode }> = ({ children }) => (
+  <div className="fixed inset-0 z-50 flex flex-col items-center justify-center outline-none px-4 pointer-events-none">
+    <motion.div
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: -20, opacity: 0 }}
+      transition={{ duration: 0.15, type: "tween" }}
+      className="flex-1 my-[15vh] w-full xs:w-[500px] overflow-hidden"
+    >
+      <div className="bg-background rounded-xl pointer-events-auto">
+        {children}
       </div>
+    </motion.div>
+  </div>
+);
+
+const ModalHeader: React.FC<ModalHeaderProps> = ({ heading, inputRef }) => (
+  <div className="text-foreground-light text-xl">
+    {heading ? (
+      <div className="px-4 py-6 select-none">{heading}</div>
+    ) : (
+      <label className="text-foreground-light flex gap-4 items-center px-4">
+        <Search className="w-6 h-6" />
+        <input
+          type="text"
+          className="py-6 flex-1 bg-transparent outline-none"
+          ref={inputRef}
+        />
+      </label>
+    )}
+  </div>
+);
+
+const ModalBody: React.FC<{ content: ReactNode }> = ({ content }) => (
+  <div>
+    <div className="border-t border-border" />
+    <div className="text-foreground pb-2">{content}</div>
+  </div>
+);
+
+export const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
+  const [modalContent, setModalContent] = useState<ReactNode>(null);
+  const [modalHeading, setModalHeading] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    },
+    [onClose]
+  );
+
+  const resetModalContent = useCallback(() => {
+    setModalContent(
+      <ModalOptions setContent={setModalContent} setHeading={setModalHeading} />
     );
     setModalHeading(null);
-  }, [isOpen]);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+      inputRef.current?.focus();
+      resetModalContent();
+    }
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, handleKeyDown, resetModalContent]);
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          <div className="fixed inset-0 z-50 flex flex-col items-center justify-center outline-none px-4 pointer-events-none">
-            <motion.div
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -20, opacity: 0 }}
-              transition={{ duration: 0.15, type: "tween" }}
-              className=" flex-1 my-[15vh] w-full xs:w-[500px] overflow-hidden "
-            >
-              <div className=" bg-background rounded-xl pointer-events-auto ">
-                <div className="  text-foreground-light text-xl ">
-                  {modalHeading ? (
-                    <div className=" px-4 py-6 select-none ">
-                      {modalHeading}
-                    </div>
-                  ) : (
-                    <label className=" text-foreground-light flex gap-4 justify-center px-4 ">
-                      <Search width="24" />
-                      <input
-                        type="text"
-                        className=" py-6 flex-1 bg-transparent outline-none"
-                      />
-                    </label>
-                  )}
-                </div>
-                <div>
-                  <div className=" border-t border-border " />
-                  <div className=" text-foreground pb-2 ">{modalContent}</div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.7 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            className="fixed inset-0 z-40 bg-black opacity-70   "
-            onClick={onClose}
-          ></motion.div>
+          <ModalOverlay onClose={onClose} />
+          <ModalContainer>
+            <ModalHeader heading={modalHeading} inputRef={inputRef} />
+            <ModalBody content={modalContent} />
+          </ModalContainer>
         </>
       )}
     </AnimatePresence>

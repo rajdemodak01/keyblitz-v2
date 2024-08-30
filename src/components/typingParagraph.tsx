@@ -5,7 +5,6 @@ import { gap } from "@/lib/constants";
 import ChangeLevelOfTypingParagraph from "./changeLevelOfTypingParagraph";
 import TypingParagraphInputBox from "./typingParagraphInputBox";
 import WordDisplay from "./wordDisplay";
-import Cursor from "./cursor";
 import { useInputFocus } from "@/hooks/useInputFocus";
 import CursorSVG from "@/images/cursor.svg";
 import GhostCursor from "./GhostCursor";
@@ -62,8 +61,6 @@ const TypingParagraph = () => {
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
       >
-        {/* <Cursor cursorRef={cursorRef} cursorPosition={cursorPosition} /> */}
-        {/* <GhostCursor typingParagraphRef={typingParagraphRef} /> */}
         <p className=" text-foreground-light text-center mb-8">
           press ESC for options
         </p>

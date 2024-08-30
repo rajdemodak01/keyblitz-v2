@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from "react";
 
-interface IKeyboardInputHandlerProps {
+interface KeyboardInputHandlerProps {
   children: React.ReactNode;
   handleFocus: () => void;
   inputIsFocused: boolean;
@@ -8,40 +8,45 @@ interface IKeyboardInputHandlerProps {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const KeyboardInputHandler = (props: IKeyboardInputHandlerProps) => {
-  const { children, handleFocus, inputIsFocused, isModalOpen, setIsModalOpen } =
-    props;
-
-  const onEscape = useCallback(() => {
+export const KeyboardInputHandler: React.FC<KeyboardInputHandlerProps> = ({
+  children,
+  handleFocus,
+  inputIsFocused,
+  isModalOpen,
+  setIsModalOpen,
+}) => {
+  const handleEscape = useCallback(() => {
     setIsModalOpen(true);
   }, [setIsModalOpen]);
 
-  const onTab = useCallback(() => {}, []);
+  const handleTab = useCallback(() => {
+    // Tab handling logic can be implemented here
+  }, []);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onEscape?.();
-        return;
+      switch (e.key) {
+        case "Escape":
+          handleEscape();
+          break;
+        case "Tab":
+          handleTab();
+          break;
+        case "Enter":
+          // Enter handling logic can be implemented here
+          break;
+        default:
+          e.preventDefault();
+          handleFocus();
       }
-
-      if (e.key === "Tab") {
-        onTab?.();
-        return;
-      }
-
-      if (e.key === "Enter") {
-        return;
-      }
-
-      e.preventDefault();
-      handleFocus();
     },
-    [handleFocus, onEscape, onTab]
+    [handleFocus, handleEscape, handleTab]
   );
 
   useEffect(() => {
-    if (inputIsFocused === false && isModalOpen === false) {
+    const shouldAddListener = !inputIsFocused && !isModalOpen;
+
+    if (shouldAddListener) {
       document.addEventListener("keydown", handleKeyDown);
     }
 

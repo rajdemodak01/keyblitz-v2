@@ -15,8 +15,8 @@ interface ChangePropOfWordPayload {
 const text =
   // "Lorem ipsum dolor sit amet consectetur";
   // "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Consectetur earum delectus distinctio pariatur commodi possimus vitae consequatur debitis dolores exercitationem.";
-  // "One of the most intriguing questions about aliens is why, if they exist, we haven't encountered them yet. This question is central to the Fermi Paradox, named after physicist Enrico Fermi.";
-  "from since man high not late right end little house";
+  "One of the most intriguing questions about aliens is why, if they exist, we haven't encountered them yet. This question is central to the Fermi Paradox, named after physicist Enrico Fermi.";
+// "from since man high not late right end little house";
 
 const initialState: TypingWord = {
   wordArr: text

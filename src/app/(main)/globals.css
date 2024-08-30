@@ -121,6 +121,7 @@
   --background: hsl(210 100% 6%);
   --foreground: hsl(180 100% 90%);
   --foreground-light: hsl(180 100% 40%);
+  --ghost-cursor: hsl(180 100% 20%);
   --primary: hsl(200 100% 28%);
   --primary-foreground: hsl(180 100% 90%);
   --secondary: hsl(203 23% 30%);
