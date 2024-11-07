@@ -5,14 +5,14 @@ interface Props {
   children: React.ReactNode;
 }
 
-type Themes = "dark" | "windows98" | "pastel" | "deepsea" | "daylight";
+type Themes = "dark" | "windows98" | "pastel" | "deepsea" | "daylight" | "test";
 
 export default function ThemeManager({ children }: Props) {
-  const [theme, setTheme] = useState<Themes>("deepsea");
+  const [theme, setTheme] = useState<Themes>("dark");
 
   return (
-    <body className={`theme-${theme} bg-background text-foreground`}>
+    <div className={`theme-${theme} bg-background text-foreground`}>
       {children}
-    </body>
+    </div>
   );
 }

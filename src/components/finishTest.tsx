@@ -2,12 +2,16 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import React from "react";
 import Chart from "./Chart";
 import { useResetStates } from "@/hooks/useResetStates";
+import { useMutableData } from "@/context/mutableDataProvider";
 
 type Props = {};
 
 function FinishTest({}: Props) {
-  const { totalTimeSpent, totalCorrectCharTyped, totalCharTyped } =
-    useAppSelector((state) => state.typingTests);
+  const {
+    testProp: {
+      current: { totalTimeSpent, totalCorrectCharTyped, totalCharTyped },
+    },
+  } = useMutableData();
   const { resetStates } = useResetStates();
 
   return (

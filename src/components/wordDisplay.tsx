@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { motion } from "framer-motion";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { useAppSelector } from "@/lib/hooks";
 import ShowWordWithCursor from "./showWordWithCursor";
 import { gap } from "@/lib/constants";
 
@@ -19,6 +19,8 @@ const WordDisplay = ({
 }: Props) => {
   const {
     level,
+    levelFromTop,
+    currentWordPostiionFromParentContainer,
     height: letterHeight,
     width: letterWidth,
   } = useAppSelector((state) => state.typingParagraphProp);
@@ -40,6 +42,23 @@ const WordDisplay = ({
       }}
       ref={typingParagraphRef}
     >
+      <div
+        ref={cursorRef}
+        className={` absolute h-full bg-foreground rounded-lg animate-pulse z-10 transition-all duration-100 ${
+          !showCursor && "!opacity-0"
+        } `}
+        style={{
+          width: letterWidth / 5,
+          left:
+            currentWordPostiionFromParentContainer.left +
+            letterIndex * letterWidth +
+            (letterIndex - 1) * (letterWidth / 5) +
+            "px",
+          top: currentWordPostiionFromParentContainer.top + "px",
+          height: letterHeight * 1.1,
+        }}
+      />
+
       {wordArr.map((wordProp, index) => (
         <ShowWordWithCursor
           wordProp={wordProp}

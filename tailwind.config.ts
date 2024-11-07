@@ -21,7 +21,7 @@ const config: Config = {
       },
       fontSize: {
         pa: [
-          "1.5rem", // change this for the paragraph fontsize to change
+          "2rem", // change this for the paragraph fontsize to change
           {
             lineHeight: "2rem",
             // letterSpacing: '-0.02em',
@@ -31,6 +31,12 @@ const config: Config = {
       },
       spacing: {
         pa: "0.8rem", // change this for the paragraph gap to change
+      },
+      borderRadius: {
+        xl: `calc(var(--radius) + 4px)`,
+        lg: `var(--radius)`,
+        md: `calc(var(--radius) - 2px)`,
+        sm: `calc(var(--radius) - 4px)`,
       },
       colors: {
         border: "var(--border)",

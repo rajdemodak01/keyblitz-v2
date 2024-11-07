@@ -16,15 +16,20 @@ export const KeyboardInputHandler: React.FC<KeyboardInputHandlerProps> = ({
   setIsModalOpen,
 }) => {
   const handleEscape = useCallback(() => {
+    console.log("escape is clicked");
+
     setIsModalOpen(true);
   }, [setIsModalOpen]);
 
   const handleTab = useCallback(() => {
     // Tab handling logic can be implemented here
+    console.log("Tab is being clicked ");
   }, []);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
+      console.log("key -> ", e.key);
+
       switch (e.key) {
         case "Escape":
           handleEscape();
@@ -38,6 +43,7 @@ export const KeyboardInputHandler: React.FC<KeyboardInputHandlerProps> = ({
         default:
           e.preventDefault();
           handleFocus();
+          break;
       }
     },
     [handleFocus, handleEscape, handleTab]

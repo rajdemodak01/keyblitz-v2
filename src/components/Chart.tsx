@@ -1,4 +1,4 @@
-import { calculateWpm } from "@/lib/calculateWPM";
+import { calculateWpm } from "@/utils/calculateWPM";
 import { useAppSelector } from "@/lib/hooks";
 import React, { useEffect, useState } from "react";
 import {
@@ -18,6 +18,7 @@ import {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
+import { useMutableData } from "@/context/mutableDataProvider";
 
 interface DataPoint {
   index: number;
@@ -92,12 +93,13 @@ const Chart = () => {
   const [chartData, setChartData] = useState<
     { index: number; wpm: number; rawWPM: number; errorCount: number | null }[]
   >([]);
-  const { secondsCharTyped } = useAppSelector((state) => state.typingTests);
+  // const { secondsCharTyped } = useAppSelector((state) => state.typingTests);
+  const { testProp } = useMutableData();
 
   useEffect(() => {
-    console.log(secondsCharTyped);
+    // console.log(secondsCharTyped);
 
-    const rawData = secondsCharTyped.map((data, index) => ({
+    const rawData = testProp.current.secondsCharTyped.map((data, index) => ({
       index: index + 1,
       wpm: calculateWpm(data.correctCharTypedCount / 5, 1000),
       rawWPM: calculateWpm(data.charTypedCount / 5, 1000),
@@ -125,7 +127,7 @@ const Chart = () => {
 
     setChartData(smoothedData);
     console.log(smoothedData, rawData);
-  }, [secondsCharTyped]);
+  }, [testProp]);
 
   return (
     <ResponsiveContainer width="100%" height="100%">

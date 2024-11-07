@@ -1,5 +1,6 @@
 "use client";
 import { setLetterHeightWidth } from "@/lib/features/typingParagraphProp/typingParagraphProp";
+import { setInitialWords } from "@/lib/features/typingWord/typingWordSlice";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import React, { useEffect, useRef } from "react";
 
@@ -50,6 +51,8 @@ const FindHeightWidth = ({ children }: Props) => {
         setLetterHeightWidth({ height: data.height, width: data.width })
       );
     });
+
+    dispatch(setInitialWords());
   }, [dispatch]);
 
   return <div ref={divRef}>{height !== 0 ? children : "Loading..."}</div>;

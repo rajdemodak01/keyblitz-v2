@@ -1,9 +1,5 @@
+import { useMutableData } from "@/context/mutableDataProvider";
 import {
-  addEachWordError,
-  addSecondsWordTyped,
-  addWordTimeStamp,
-  increaseTotalCharTyped,
-  increaseTotalCorrectCharTyped,
   setEndTest,
   setPauseTest,
   setStartTest,
@@ -35,7 +31,7 @@ const TypingParagraphInputBox = ({
   isModalOpen,
   setIsModalOpen,
 }: Props) => {
-  const [inputValue, setInputValue] = useState("");
+  const inputValue = useRef("");
   const { wordArr, wordIndex, letterIndex, correctWordArr } = useAppSelector(
     (state) => state.typingWord
   );
@@ -45,6 +41,17 @@ const TypingParagraphInputBox = ({
   const { startTest, endTest, pauseTest, resetTrigger } = useAppSelector(
     (state) => state.typingTests
   );
+
+  const {
+    startTestMethod,
+    endTestMethod,
+    pauseTestMethod,
+    increaseTotalCorrectCharTyped,
+    increaseTotalCharTyped,
+    addEachWordError,
+    addEachSecondWordTyped,
+    addWordTimeStamp,
+  } = useMutableData();
 
   // this variable is used for the addSecondsWordTyped
   const charTypedCount = useRef<number>(0);
@@ -104,16 +111,16 @@ const TypingParagraphInputBox = ({
         if (isNewInput) {
           if (newInput === correctWord[letterIndex]) {
             // correct character is typed
-            dispatch(increaseTotalCorrectCharTyped());
+            increaseTotalCorrectCharTyped();
             correctCharTypedCount.current++;
-            dispatch(increaseTotalCharTyped());
+            increaseTotalCharTyped();
             charTypedCount.current++;
             // console.log("correct char", newInput, correctWord[letterIndex]);
           } else {
             // incorrect character is typed
-            dispatch(increaseTotalCharTyped());
+            increaseTotalCharTyped();
             charTypedCount.current++;
-            dispatch(addEachWordError(wordIndex));
+            addEachWordError({ index: wordIndex });
             // console.log("incorrect char", newInput, correctWord[letterIndex]);
           }
         }
@@ -139,7 +146,7 @@ const TypingParagraphInputBox = ({
 
   function handleTestPauseWhenBlurred() {
     if (startTest && !endTest) {
-      dispatch(setPauseTest());
+      pauseTestMethod();
     }
   }
 
@@ -147,18 +154,16 @@ const TypingParagraphInputBox = ({
     let intervalId: NodeJS.Timeout | null = null;
 
     const intervalFunction = () => {
-      console.log(
-        "dispatch function is being called -> ",
-        charTypedCount.current,
-        correctCharTypedCount.current
-      );
+      // console.log(
+      //   "dispatch function is being called -> ",
+      //   charTypedCount.current,
+      //   correctCharTypedCount.current
+      // );
 
-      dispatch(
-        addSecondsWordTyped({
-          charTypedCount: charTypedCount.current,
-          correctCharTypedCount: correctCharTypedCount.current,
-        })
-      );
+      addEachSecondWordTyped({
+        charTypedCount: charTypedCount.current,
+        correctCharTypedCount: correctCharTypedCount.current,
+      });
 
       charTypedCount.current = 0;
       correctCharTypedCount.current = 0;
@@ -184,10 +189,10 @@ const TypingParagraphInputBox = ({
         clearInterval(intervalId);
       }
     };
-  }, [dispatch, startTest, endTest, pauseTest]);
+  }, [addEachSecondWordTyped, dispatch, startTest, endTest, pauseTest]);
 
   useEffect(() => {
-    setInputValue("");
+    inputValue.current = "";
   }, [resetTrigger]);
 
   return (
@@ -195,23 +200,25 @@ const TypingParagraphInputBox = ({
       type="text"
       ref={inputRef}
       id="main-user-typing-cursor"
-      value={inputValue}
+      value={inputValue.current}
       disabled={endTest || isModalOpen}
       className="  absolute inset-0 outline-none border-none bg-transparent -z-10 appearance-none text-transparent user-select-none "
       onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.ctrlKey && e.key === "Backspace") {
-          if (inputValue === "" && wordIndex - 1 >= 0) {
-            setInputValue(wordArr[wordIndex - 1].typedWord + " ");
+          if (inputValue.current === "" && wordIndex - 1 >= 0) {
+            inputValue.current = wordArr[wordIndex - 1].typedWord + " ";
             dispatch(changeWordIndex(wordIndex - 1));
           }
           console.log("Ctrl+Backspace pressed");
         } else if (e.key === "Backspace") {
-          if (inputValue === "" && wordIndex - 1 >= 0) {
-            setInputValue(wordArr[wordIndex - 1].typedWord + " ");
+          if (inputValue.current === "" && wordIndex - 1 >= 0) {
+            inputValue.current = wordArr[wordIndex - 1].typedWord + " ";
             dispatch(changeWordIndex(wordIndex - 1));
           }
-          console.log("Backspace pressed");
+          // console.log("Backspace pressed");
         } else if (e.key === "Escape") {
+          console.log("escape entered from here");
+
           setIsModalOpen(true);
           handleBlur();
         } else if (
@@ -225,6 +232,7 @@ const TypingParagraphInputBox = ({
         ) {
           e.preventDefault();
         }
+        // console.log(e.key);
       }}
       onInput={(e: React.FormEvent<HTMLInputElement>) => {
         const inputElement = e.target as HTMLInputElement;
@@ -235,20 +243,17 @@ const TypingParagraphInputBox = ({
           if (inputElement.value !== " ") {
             inputElement.value = "";
             if (startTest && wordIndex === wordArr.length - 1) {
-              dispatch(setEndTest());
+              endTestMethod();
               console.log("The test has ended");
             } else if (pauseTest !== false) {
-              dispatch(setStartTest());
+              startTestMethod();
             }
-            dispatch(increaseTotalCorrectCharTyped());
-            // charTypedCount.current++;
-            dispatch(increaseTotalCharTyped());
-            // correctCharTypedCount.current++;
+            increaseTotalCorrectCharTyped();
+            increaseTotalCharTyped();
             dispatch(changeWordIndex(wordIndex + 1));
             dispatch(changeLetterIndex(0));
-            dispatch(
-              addWordTimeStamp({ index: wordIndex, timeStamp: Date.now() })
-            );
+
+            addWordTimeStamp({ index: wordIndex, timeStamp: Date.now() });
           } else {
             inputElement.value = "";
           }
@@ -259,23 +264,25 @@ const TypingParagraphInputBox = ({
             keyInput !== null &&
             !startTest
           ) {
-            dispatch(setStartTest());
-            console.log("The test has started");
+            startTestMethod();
           } else if (pauseTest !== false) {
-            dispatch(setStartTest());
+            startTestMethod();
           }
           checkForError(wordIndex, inputElement, keyInput !== null, keyInput);
         }
 
-        setInputValue(inputElement.value);
+        inputValue.current = inputElement.value;
       }}
-      onFocus={handleFocus}
+      onFocus={() => {
+        handleFocus();
+      }}
       onBlur={() => {
         handleTestPauseWhenBlurred();
         handleBlur();
       }}
       autoComplete="off"
       spellCheck="false"
+      autoCapitalize="false"
     />
   );
 };

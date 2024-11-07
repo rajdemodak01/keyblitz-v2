@@ -1,9 +1,10 @@
 "use client";
-import React from "react";
-import Button from "./ui/Button";
-import { useResetStates } from "@/hooks/useResetStates";
 
-const ChaseTheCursor = () => {
+import React from "react";
+import { useResetStates } from "@/hooks/useResetStates";
+import { Button } from "./ui/Button";
+
+const RestartButton = () => {
   const { resetStates } = useResetStates();
 
   function handleRestartClick() {
@@ -13,11 +14,9 @@ const ChaseTheCursor = () => {
 
   return (
     <div className=" grid place-items-center mt-8">
-      <Button size="small" onClick={handleRestartClick}>
-        Restart
-      </Button>
+      <Button onClick={handleRestartClick}>Restart</Button>
     </div>
   );
 };
 
-export default ChaseTheCursor;
+export default RestartButton;

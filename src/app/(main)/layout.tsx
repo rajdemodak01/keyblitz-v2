@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/header";
-import { Space_Mono } from "next/font/google";
 import ThemeManager from "@/components/themeManager";
-import StoreProvider from "./storeProvider";
-import Button from "@/components/ui/Button";
-import ChaseTheCursor from "@/components/ChaseTheCursor";
+import StoreProvider from "../../lib/storeProvider";
+import RestartButton from "@/components/RestartButton";
+import { Space_Mono } from "next/font/google";
+import MutableDataProvider from "@/context/mutableDataProvider";
 
 const spaceMono = Space_Mono({
   weight: ["400", "700"],
@@ -28,27 +28,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <StoreProvider>
-        <ThemeManager>
-          <div
-            className={
-              `${spaceMono.variable} font-sans` +
-              " px-4 xs:w-[450px] sm:w-[600px] md:w-[740px] lg:w-[980px] xl:w-[1200px]   mx-auto h-svh "
-            }
-          >
-            <Header />
-            {/* <div>
-              <Button size="small" className=" block ml-auto">
-                Chase the cursor
-              </Button>
-            </div> */}
-            <div className=" mt-8">{typing}</div>
+      <body className={`${spaceMono.variable} font-sans`}>
+        <StoreProvider>
+          <MutableDataProvider>
+            <ThemeManager>
+              <div
+                className={
+                  " px-4 xs:w-[450px] sm:w-[600px] md:w-[740px] lg:w-[980px] xl:w-[1200px] mx-auto h-svh "
+                }
+              >
+                <Header />
+                <div className=" mt-8">{typing}</div>
 
-            <ChaseTheCursor />
-            {/* {children} */}
-          </div>
-        </ThemeManager>
-      </StoreProvider>
+                <RestartButton />
+                {/* {children} */}
+              </div>
+            </ThemeManager>
+          </MutableDataProvider>
+        </StoreProvider>
+      </body>
     </html>
   );
 }

@@ -21,7 +21,6 @@ const GhostCursor = (props: IGhostCursorProps) => {
   const cursorsRef = useRef(globalCursor);
 
   /*
-
     for now the bot doesn't makes any mistakes this will be part of version-2
 
     first count the characters in the paragraph then use this formula to calculate the time
@@ -93,7 +92,9 @@ const GhostCursor = (props: IGhostCursorProps) => {
   );
 
   useEffect(() => {
-    if (startTest && !endTest) {
+    const isTestRunning = startTest && !endTest; // will be true even in paused state
+
+    if (isTestRunning) {
       cursorsRef.current.forEach((_, index) => {
         // console.log("setting up timer", index);
         timersRef.current[index] = setupCursorInterval(index);

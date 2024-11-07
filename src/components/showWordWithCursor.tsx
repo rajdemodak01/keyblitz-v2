@@ -30,13 +30,13 @@ const ShowWordWithCursor = ({
   const { cursors } = useAppSelector((state) => state.ghostCursor);
 
   useEffect(() => {
-    if (isCurrent) setLeftPos(width * letterIndex + letterIndex * (width / 4));
+    if (isCurrent) setLeftPos(width * letterIndex + letterIndex * (width / 5));
   }, [width, isCurrent, letterIndex]);
 
   useEffect(() => {
     const ghostPos = cursors.map((cursor, i) => {
       if (cursor.wordIndex === index) {
-        return cursor.letterIndex * width + cursor.letterIndex * (width / 4);
+        return cursor.letterIndex * width + cursor.letterIndex * (width / 5);
       }
       return 0;
     });
@@ -49,7 +49,7 @@ const ShowWordWithCursor = ({
       id="wordContainer"
       ref={isCurrent ? currentWordRef : null}
     >
-      <div className=" flex z-10" style={{ gap: width / 4 }}>
+      <div className=" flex z-10" style={{ gap: width / 5 }}>
         {wordProp.word.split("").map((letter, index) => (
           <ShowLetterWithCursor
             letter={letter}
@@ -58,7 +58,7 @@ const ShowWordWithCursor = ({
           />
         ))}
       </div>
-      {isCurrent && (
+      {/* {isCurrent && (
         <motion.div
           layoutId="cursor"
           ref={cursorRef}
@@ -69,11 +69,11 @@ const ShowWordWithCursor = ({
           } `}
           transition={{
             type: "tween",
-            duration: 0.15,
+            duration: 0.2,
           }}
-          style={{ width: width / 4, left: -width / 4 }}
+          style={{ width: width / 5, left: -width / 5 }}
         />
-      )}
+      )} */}
 
       {cursors.map((cursor, i) =>
         cursor.wordIndex === index ? (
@@ -82,12 +82,14 @@ const ShowWordWithCursor = ({
             key={i}
             initial={{ x: ghostsLeftPos[i] }}
             animate={{ x: ghostsLeftPos[i] }}
-            className=" absolute h-full bg-ghost-cursor rounded-lg animate-pulse z-[5] "
+            className={`absolute h-full bg-ghost-cursor rounded-lg animate-pulse z-[5] ${
+              !showCursor && "!opacity-0"
+            }`}
             transition={{
               type: "tween",
               duration: 0.15,
             }}
-            style={{ width: width / 6, left: -width / 4 }}
+            style={{ width: width / 5, left: -width / 5 }}
           />
         ) : null
       )}

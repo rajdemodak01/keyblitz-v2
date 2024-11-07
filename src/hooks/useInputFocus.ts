@@ -1,12 +1,11 @@
-import { resetTest } from "@/lib/features/typingTests/typingTestsSlice";
-import { useAppDispatch } from "@/lib/hooks";
+import { useMutableData } from "@/context/mutableDataProvider";
 import { useEffect, useRef, useState } from "react";
 
 export const useInputFocus = () => {
-  const dispatch = useAppDispatch();
+  const { resetTest } = useMutableData();
 
   const resetStates = () => {
-    dispatch(resetTest());
+    resetTest();
   };
   const [inputIsFocused, setInputIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
